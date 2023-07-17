@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "223354935119",
+    "project_id": "bloc-auth-9c49e",
+    "storage_bucket": "bloc-auth-9c49e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223354935119:android:28a7523d0e1ce7fcc1973a",
+        "android_client_info": {
+          "package_name": "com.atom.firebase_auth_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "223354935119-4b5oa356vg4t8v3dsqh3ah4h76mkg3v3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.atom.firebase_auth_app",
+            "certificate_hash": "fb8da42cbabf21bbd4de3a4403709e4daa6e802f"
+          }
+        },
+        {
+          "client_id": "223354935119-rr7nj0oqf57jormjtrkjr2h6obounh6s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2M4l27ZkAZdxaQUu-uOW5T95_pVu3_YA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223354935119-rr7nj0oqf57jormjtrkjr2h6obounh6s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
