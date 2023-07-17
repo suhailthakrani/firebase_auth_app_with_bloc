@@ -13,11 +13,13 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     on<SignInInitialEvent>(mapSignInInitialEventWithState);
     // on<SignInShowOrHidePasswordEvent>(mapSignInShowOrHidePasswordEventTOState);
     on<SignInTextFieldsChangedEvent>(mapSignInTextfieldsChangedEventWithState);
-    on<SignInButtonPressedeEvent>(mapSignInButtonPressedEventWithState);
-  }
+    on<SignInWithEmailButtonPressedEvent>(mapSignInButtonPressedEventWithState);
+    on<SignInGoogleButtonPressedEvent>(mapSignInGoogleButtonPressedEventWithState);
+    on<SignInHaveVisitWithoutSignInEvent>(mapSignInHaveVisitWithoutSignInEventWithState);
+    }
 
   Future<FutureOr<void>> mapSignInButtonPressedEventWithState(
-      SignInButtonPressedeEvent event, Emitter<SignInState> emit) async {
+      SignInWithEmailButtonPressedEvent event, Emitter<SignInState> emit) async {
     Map<String, String> errors = {};
 
     
@@ -27,13 +29,14 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       if (event.password.isEmpty) {
         errors["password"] = "Please enter password";
       }
+      
       if (errors.isNotEmpty) {
         emit(SignInErrorState(errors: errors));
       } else {
         print("-----------------------1");
         User? user = await authRepository.signInWithEmail(
             email: event.email, password: event.password);
-        print("-----------------------2");
+        print("-----------------------2 $user");
         if (user != null) {
           emit(SignInNavigateState());
         } else {
@@ -72,6 +75,24 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       ));
     }
   }
+   FutureOr<void> mapSignInPhoneButtonPressedEventWithState(SignInPhoneButtonPressedEvent event, Emitter<SignInState> emit) {
+    emit(SignInNavigateState());
+  }
 
+  Future<FutureOr<void>> mapSignInGoogleButtonPressedEventWithState(SignInGoogleButtonPressedEvent event, Emitter<SignInState> emit) async {
+    emit(SignInLoadingState());
+    await authRepository.continueWithGoogle();
+    emit(SignInNavigateState());
+  }
+
+  FutureOr<void> mapSignInFacebookButtonPressedEventWithState(SignInFacebookButtonPressedEvent event, Emitter<SignInState> emit) {
+    emit(SignInNavigateState());
+  }
+
+  Future<FutureOr<void>> mapSignInHaveVisitWithoutSignInEventWithState(SignInHaveVisitWithoutSignInEvent event, Emitter<SignInState> emit) async {
+    emit(SignInLoadingState());
+    await authRepository.signInAnonymously();
+    emit(SignInNavigateState());
+  }
 
 }

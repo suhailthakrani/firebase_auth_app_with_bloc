@@ -11,30 +11,36 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
-User? user;
- @override
+  User? user;
+  @override
   void initState() {
     intit();
     super.initState();
   }
-   intit() async {
+
+  intit() async {
     user = FirebaseAuth.instance.currentUser;
   }
+
   @override
   Widget build(BuildContext context) {
-   
     return Scaffold(
       appBar: AppBar(
         title: const Text("Main Screen"),
       ),
-      body: Column(children: [
-        Text(user != null ? user!.uid: ""),
-        Text(user != null ? user!.emailVerified.toString(): ""),
-        Text(user != null ? user!.displayName.toString(): GetStorage().read("name")),
-        Text(user != null ? user!.email.toString(): ""),
-        Text(user != null ? user!.uid: ""),
-      ],),
+      body: Column(
+        children: [
+          Text(user != null ? user!.uid : ""),
+          Text(user != null ? user!.emailVerified.toString() : ""),
+          Text(user != null
+              ? user!.displayName.toString()
+              : GetStorage().read("name")),
+          Text(user != null ? user!.email.toString() : ""),
+          Text(user != null ? user!.uid : ""),
+          SizedBox(height: 100),
+          ElevatedButton(onPressed: (){}, child: Text("Sign Out"))
+        ],
+      ),
     );
   }
 }

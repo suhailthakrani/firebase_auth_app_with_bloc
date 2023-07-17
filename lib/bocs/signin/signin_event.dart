@@ -25,16 +25,35 @@ class SignInTextFieldsChangedEvent extends SignInEvent {
   @override
   List<Object> get props => [email, password];
 }
-class SignInButtonPressedeEvent extends SignInEvent {
+class SignInWithEmailButtonPressedEvent extends SignInEvent {
   final String email;
   final String password;
-  const SignInButtonPressedeEvent(
+  const SignInWithEmailButtonPressedEvent(
     this.email,
     this.password,
   );
 
   @override
   List<Object> get props => [email, password];
+}
+class SignInHaveVisitWithoutSignInEvent extends SignInEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class SignInPhoneButtonPressedEvent extends SignInEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class SignInGoogleButtonPressedEvent extends SignInEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class SignInFacebookButtonPressedEvent extends SignInEvent {
+  @override
+  List<Object> get props => [];
 }
 
 

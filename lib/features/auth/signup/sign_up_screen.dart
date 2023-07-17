@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_auth_app/bocs/signup/signup_bloc.dart';
+import 'package:firebase_auth_app/features/auth/signin/sign_in_screen.dart';
 import 'package:firebase_auth_app/features/main/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:firebase_auth_app/commons/constants/colors.dart';
+
+import '../../../commons/widgets/custom_textfield.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -196,7 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MainScreen(),
+                      builder: (context) => const SignInScreen(),
                     ));
               }
             },
@@ -301,58 +304,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final Function(String value) onChanged;
-  final bool obsecureText;
-  final String hint;
-
-  TextInputType keyboardType;
-
-  Widget prefix;
-
-  Widget suffix;
-  CustomTextField({
-    Key? key,
-    required this.controller,
-    required this.onChanged,
-    this.obsecureText = false,
-    this.hint = "",
-    this.keyboardType = TextInputType.name,
-    this.prefix = const SizedBox(),
-    this.suffix = const SizedBox(),
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      cursorHeight: 25,
-      onChanged: onChanged,
-      obscureText: obsecureText,
-      keyboardType: keyboardType,
-      textAlignVertical: TextAlignVertical.center,
-      decoration: InputDecoration(
-          hintText: hint,
-          filled: true,
-          fillColor: backgroundColor,
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Theme.of(context).primaryColor,
-              )),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-          prefixIcon: prefix,
-          suffixIcon: suffix),
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w400,
-      ),
-    );
-  }
-}

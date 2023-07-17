@@ -62,13 +62,26 @@ class AuthRepository {
   Future<User?> signInWithEmail({required String email, required String password}) async {
      try {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      if (userCredential.credential != null) {
-        User? user = userCredential.user;
+      if (userCredential.user != null) {
+        User user = userCredential.user!;
 
-      log(stackTrace: StackTrace.fromString("Signed Up User"), "$user");
+      log(stackTrace: StackTrace.fromString("Signed Up User--------->"), "$user");
 
       return user;
       }
+    } on FirebaseAuthException catch (e) {
+      // Handle sign-in errors
+      print('FirebaseAuthException on sign in with email: $e');
+    } catch (e) {
+      print(e);
+      
+    }
+    return null;
+  } 
+    Future<User?> signOut() async {
+     try {
+      await FirebaseAuth.instance.signOut();
+     
     } on FirebaseAuthException catch (e) {
       // Handle sign-in errors
       print('FirebaseAuthException on sign in with email: $e');
@@ -86,6 +99,34 @@ class AuthRepository {
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
+        final AuthCredential authCredential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+        UserCredential userCredential = await _firebaseAuth.signInWithCredential(authCredential);
+        User? user = userCredential.user;
+        log(stackTrace: StackTrace.fromString("Signed Up User"), "$user");
+
+        return user;
+      }
+    } on FirebaseAuthException catch (e) {
+      // Handle sign-in errors
+      print('FirebaseAuthException on sign up with email: $e');
+    } catch (e) {
+      print(e);
+      
+    }
+    return null;
+  } 
+    Future<User?> signOutFromGoogle() async {
+    
+     try {
+      
+      GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signOut();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
         final AuthCredential authCredential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
