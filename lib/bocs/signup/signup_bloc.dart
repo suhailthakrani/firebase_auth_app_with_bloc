@@ -20,6 +20,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     on<SignUpGoogleButtonPressedEvent>(mapSignUpGoogleButtonPressedEventWithState);
     on<SignUpFacebookButtonPressedEvent>(mapSignUpFacebookButtonPressedEventWithState);
     on<SignUpHaveVisitWithoutSignUpEvent>(mapSignUpHaveVisitWithoutSignUpEventWithState);
+    on<SignUpAlreadyHaveAccountpEvent>(mapSignUpAlreadyHaveAccountpEventWithState);
     
   }
   Future<void> mapSignUpTextFieldsChangedEventWithState(
@@ -100,6 +101,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   }
 
   FutureOr<void> mapSignUpHaveVisitWithoutSignUpEventWithState(SignUpHaveVisitWithoutSignUpEvent event, Emitter<SignUpState> emit) {
+    emit(SignUpNavigateState());
+  }
+
+  FutureOr<void> mapSignUpAlreadyHaveAccountpEventWithState(SignUpAlreadyHaveAccountpEvent event, Emitter<SignUpState> emit) {
     emit(SignUpNavigateState());
   }
 }

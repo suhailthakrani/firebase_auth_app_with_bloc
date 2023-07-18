@@ -36,7 +36,11 @@ class SignInWithEmailButtonPressedEvent extends SignInEvent {
   @override
   List<Object> get props => [email, password];
 }
-class SignInHaveVisitWithoutSignInEvent extends SignInEvent {
+class SignInContinueAsGuestSignInEvent extends SignInEvent {
+  @override
+  List<Object> get props => [];
+}
+class SignInDontHaveAccountButtonPressedEvent extends SignInEvent {
   @override
   List<Object> get props => [];
 }

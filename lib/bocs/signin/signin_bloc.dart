@@ -11,11 +11,11 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   final AuthRepository authRepository;
   SignInBloc(this.authRepository) : super(SignInInitialState()) {
     on<SignInInitialEvent>(mapSignInInitialEventWithState);
-    // on<SignInShowOrHidePasswordEvent>(mapSignInShowOrHidePasswordEventTOState);
+    on<SignInDontHaveAccountButtonPressedEvent>(mapSignInDontHaveAccountButtonPressedEventWithState);
     on<SignInTextFieldsChangedEvent>(mapSignInTextfieldsChangedEventWithState);
     on<SignInWithEmailButtonPressedEvent>(mapSignInButtonPressedEventWithState);
     on<SignInGoogleButtonPressedEvent>(mapSignInGoogleButtonPressedEventWithState);
-    on<SignInHaveVisitWithoutSignInEvent>(mapSignInHaveVisitWithoutSignInEventWithState);
+    on<SignInContinueAsGuestSignInEvent>(mapSignInContinueAsGuestEventWithState);
     }
 
   Future<FutureOr<void>> mapSignInButtonPressedEventWithState(
@@ -89,10 +89,14 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     emit(SignInNavigateState());
   }
 
-  Future<FutureOr<void>> mapSignInHaveVisitWithoutSignInEventWithState(SignInHaveVisitWithoutSignInEvent event, Emitter<SignInState> emit) async {
+  Future<FutureOr<void>> mapSignInContinueAsGuestEventWithState(SignInContinueAsGuestSignInEvent event, Emitter<SignInState> emit) async {
     emit(SignInLoadingState());
     await authRepository.signInAnonymously();
     emit(SignInNavigateState());
   }
 
+
+  FutureOr<void> mapSignInDontHaveAccountButtonPressedEventWithState(SignInDontHaveAccountButtonPressedEvent event, Emitter<SignInState> emit) {
+     emit(SignInNavigateState());
+  }
 }

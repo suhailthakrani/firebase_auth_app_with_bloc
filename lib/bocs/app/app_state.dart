@@ -7,4 +7,5 @@ abstract class AppState extends Equatable {
   List<Object> get props => [];
 }
 
-class AppInitial extends AppState {}
+class AppInitialState extends AppState {}
+class AppNavigateState extends AppState {}

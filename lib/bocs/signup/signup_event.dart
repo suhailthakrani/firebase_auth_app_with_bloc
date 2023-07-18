@@ -47,7 +47,10 @@ class SignUpWithEmailButtonPressedEvent extends SignUpEvent {
   @override
   List<Object> get props => [email, password];
 }
-
+class SignUpAlreadyHaveAccountpEvent extends SignUpEvent {
+  @override
+  List<Object> get props => [];
+}
 class SignUpHaveVisitWithoutSignUpEvent extends SignUpEvent {
   @override
   List<Object> get props => [];

@@ -1,10 +1,15 @@
+import 'package:firebase_auth_app/bocs/signup/signup_bloc.dart';
+import 'package:firebase_auth_app/features/auth/signup/sign_up_screen.dart';
+import 'package:firebase_auth_app/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../bocs/signin/signin_bloc.dart';
 import '../../../commons/widgets/custom_textfield.dart';
 import '../../main/main_screen.dart';
+import '../phone_auth/phone_auth_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({
@@ -25,7 +30,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(height: height * 0.15),
             Row(
@@ -111,7 +116,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           style:
                               const TextStyle(color: Colors.red, fontSize: 12),
                         )
-                      : SizedBox();
+                      : const SizedBox();
                 } else {
                   return const SizedBox();
                 }
@@ -127,30 +132,40 @@ class _SignInScreenState extends State<SignInScreen> {
                         builder: (context) => const MainScreen(),
                       ));
                 }
-                if (state is SignInLoadingState) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Padding(
-                        padding: EdgeInsets.all(4.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                    ),
-                  );
+                if (state is SignInInvalidCredentialState) {
+                  final loadedState = state;
+
+                  SnackBar snackBar = SnackBar(
+                      content: Text(loadedState.error ==
+                              "Please check your password or email!"
+                          ? "The password is invalid or the user does not have a password."
+                          : "Ups Something went wrong. Please try again later"));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
               },
               builder: (context, state) {
                 return ElevatedButton(
                   onPressed: () {
+                    final box = GetStorage();
+                    print("-----------${box.read('password')}");
+                    print("-----------${box.read('email')}");
+                    print(state);
                     context.read<SignInBloc>().add(
                           SignInWithEmailButtonPressedEvent(
                             emailController.text,
                             passController.text,
                           ),
                         );
+                    print(state);
                   },
-                  child: const Text(
-                    "Sign In with email",
-                  ),
+                  child: state is SignInLoadingState
+                      ? const Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : const Text(
+                          "Sign In with email",
+                        ),
                 );
               },
             ),
@@ -159,11 +174,30 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 const Text("Don't have an account?"),
                 const SizedBox(width: 10),
-                TextButton(
-                  onPressed: () {
-                    print(context.read<SignInBloc>().state);
+                BlocConsumer<SignInBloc, SignInState>(
+                  listener: (context, state) {
+                    if (state is SignInNavigateState) {
+                      context.read<SignUpBloc>().add(const SignUpInitialEvent());
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider(
+                              create: (context) => SignUpBloc(AuthRepository()),
+                              child: const SignUpScreen(),
+                            ),
+                          ));
+                    }
                   },
-                  child: const Text("Sign Up"),
+                  builder: (context, state) {
+                    return TextButton(
+                      onPressed: () {
+                        context
+                            .read<SignInBloc>()
+                            .add(SignInDontHaveAccountButtonPressedEvent());
+                      },
+                      child: const Text("Sign Up"),
+                    );
+                  },
                 ),
               ],
             ),
@@ -191,14 +225,37 @@ class _SignInScreenState extends State<SignInScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
+                BlocConsumer<SignUpBloc, SignUpState>(
+            listener: (context, state) {
+              if (state is SignUpNavigateState) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PhoneAuthScreen(),
+                    ));
+              }
+            },
+            builder: (context, state) {
+              return ElevatedButton(
+                onPressed: () {
+                  print("------------------------");
+                  print(state.toString());
+                  context.read<SignUpBloc>().add(
+                        SignUpPhoneButtonPressedEvent(
+                          
+                        ),
+                      );
+                      print("------------------------");
+                  print(state.toString());
+                },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
                       ),
-                    ),
-                    child: const Icon(FontAwesomeIcons.phone)),
+                      child: const Icon(FontAwesomeIcons.phone));
+                },
+              ),
                 BlocConsumer<SignInBloc, SignInState>(
                   listener: (context, state) {
                     if (state is SignInNavigateState) {
@@ -248,7 +305,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 20),
             BlocConsumer<SignInBloc, SignInState>(
               listener: (context, state) {
-                if (state is SignInNavigateState) {
+                if (context.read<SignInBloc>().state is SignInNavigateState) {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -271,14 +328,14 @@ class _SignInScreenState extends State<SignInScreen> {
                   onPressed: () {
                     context
                         .read<SignInBloc>()
-                        .add(SignInHaveVisitWithoutSignInEvent());
+                        .add(SignInContinueAsGuestSignInEvent());
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
                     ),
                   ),
-                  child: const Text("Try without sign up"),
+                  child: const Text("Continue as Guest"),
                 );
               },
             ),

@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:firebase_auth_app/bocs/app/app_bloc.dart';
+import 'package:firebase_auth_app/bocs/phone/phone_bloc.dart';
 import 'package:firebase_auth_app/features/auth/signin/sign_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +27,7 @@ class MyApp extends StatelessWidget {
     Key? key,
     required this.authRepository,
   }) : super(key: key);
-
-  // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     final box = GetStorage();
@@ -41,11 +42,15 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider(create:(context) => AppBloc(),),
           BlocProvider(
             create: (context) => SignUpBloc(authRepository),
           ),
           BlocProvider(
             create: (context) => SignInBloc(authRepository),
+          ),
+          BlocProvider(
+            create: (context) => PhoneBloc(authRepository),
           ),
         ],
         child: MaterialApp(
@@ -56,6 +61,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           home: box.read("email") != null ? const SignInScreen(): const SignUpScreen(),
+          // home: const MainScreen(),
         ),
       ),
     );

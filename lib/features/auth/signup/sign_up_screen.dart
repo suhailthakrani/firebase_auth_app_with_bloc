@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_auth_app/bocs/signup/signup_bloc.dart';
+import 'package:firebase_auth_app/features/auth/phone_auth/phone_auth_screen.dart';
 import 'package:firebase_auth_app/features/auth/signin/sign_in_screen.dart';
 import 'package:firebase_auth_app/features/main/main_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +10,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:firebase_auth_app/commons/constants/colors.dart';
 
+import '../../../bocs/signin/signin_bloc.dart';
 import '../../../commons/widgets/custom_textfield.dart';
+import '../../../repositories/auth_repository.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -217,9 +220,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 },
                 child: state is SignUpLoadingState
                     ? const Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    )
+                        padding: EdgeInsets.all(4.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
                     : const Text(
                         "Sign Up",
                       ),
@@ -231,9 +234,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               const Text("Already have an account?"),
               const SizedBox(width: 10),
-              TextButton(
-                onPressed: () {},
-                child: const Text("Login"),
+              BlocConsumer<SignUpBloc, SignUpState>(
+               listener: (context, state) {
+                    if (state is SignUpNavigateState) {
+                      context.read<SignInBloc>().add(const SignInInitialEvent());
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider(
+                              create: (context) => SignInBloc(AuthRepository()),
+                              child: const SignInScreen(),
+                            ),
+                          ));
+                    }
+                  },
+                  builder: (context, state) {
+                    return TextButton(
+                      onPressed: () {
+                        context
+                            .read<SignUpBloc>()
+                            .add(SignUpAlreadyHaveAccountpEvent());
+                      },
+                      child: const Text("Login"),
+                    );
+                  },
               ),
             ],
           ),
@@ -261,14 +285,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                  ),
-                  child: const Icon(FontAwesomeIcons.phone)),
+              BlocConsumer<SignUpBloc, SignUpState>(
+                listener: (context, state) {
+                  if (state is SignUpNavigateState) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PhoneAuthScreen(),
+                        ));
+                  }
+                },
+                builder: (context, state) {
+                  return ElevatedButton(
+                      onPressed: () {
+                        print("------------------------");
+                        print(state.toString());
+                        context.read<SignUpBloc>().add(
+                              SignUpPhoneButtonPressedEvent(),
+                            );
+                        print("------------------------");
+                        print(state.toString());
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                      ),
+                      child: const Icon(FontAwesomeIcons.phone));
+                },
+              ),
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
@@ -296,11 +341,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 borderRadius: BorderRadius.circular(40),
               ),
             ),
-            child: Text("Try without sign up"),
+            child: const Text("Continue as Guest"),
           ),
         ],
       ),
     );
   }
 }
-
